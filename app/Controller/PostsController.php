@@ -33,14 +33,25 @@ class PostsController extends AppController {
         }
     }
     
-    function edit($id = null){
+    function edit($id = null) {
         $this->Post->id = $id;
-        if($this->request->is('get')){
+        if ($this->request->is('get')) {
             $this->request->data = $this->Post->read();
         } else {
-            $this->Post->save($this->request->data);
-            $this->Session->setFlash("Seu Post foi atualizado com sucesso.");
-            $this->redirect(array('action' , 'index'));
+            if ($this->Post->save($this->request->data)) {
+                $this->Session->setFlash('Your post has been updated.');
+                $this->redirect(array('action' => 'index'));
+            }
+        }
+    }
+    
+    function delete($id) {
+        if(!$this->request->is('post')){
+            throw new MethodNotAllowedException();
+        }
+        if($this->Post->delete($id)){
+            $this->Session->setFlash('The Post with: ' . $id . ' has been deleted.');
+            $this->redirect(array('action' => 'index'));
         }
     }
 }
